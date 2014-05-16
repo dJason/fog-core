@@ -33,7 +33,7 @@ module Fog
         require 'fog/bare_metal_cloud/compute'
         Fog::Compute::BareMetalCloud.new(attributes)
       when :rackspace
-        version = attributes.delete(:version) 
+        version = attributes.delete(:version)
         version = version.to_s.downcase.to_sym unless version.nil?
         if version == :v1
           Fog::Logger.deprecation "First Gen Cloud Servers are deprecated. Please use `:version => :v2` attribute to use Next Gen Cloud Servers."
@@ -42,6 +42,20 @@ module Fog
         else
           require 'fog/rackspace/compute_v2'
           Fog::Compute::RackspaceV2.new(attributes)
+        end
+      when :centurylink
+        version = attributes.delete(:version)
+        version = version.to_s.downcase.to_sym unless version.nil?
+        if version == :v1
+          require 'fog/centurylink/compute'
+          attributes.delete(:centurylink_username)
+          attributes.delete(:centurylink_password)
+          Fog::Compute::CenturyLink.new(attributes)
+        else
+          require 'fog/centurylink/compute_v2'
+          attributes.delete(:centurylink_api_key)
+          attributes.delete(:centurylink_api_password)
+          Fog::Compute::CenturyLinkV2.new(attributes)
         end
       when :stormondemand
         require 'fog/storm_on_demand/compute'
